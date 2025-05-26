@@ -21,8 +21,8 @@ db = SQLAlchemy(app)
 
 #下面分别创建了两个模型来表示这两张表。
 #模型类声明要继承 db.Model
+#每个类属性（字段）要实例化db.Column
 class User(db.Model):  # 表名将会是 user（自动生成，小写处理）
-    #每个类属性（字段）要实例化db.Column
     id = db.Column(db.Integer, primary_key=True)  # 主键
     name = db.Column(db.String(20))  # 名字
 
@@ -73,7 +73,6 @@ def forge():
         {'title': 'King of Comedy', 'year': '1999'},
         {'title': 'Devils on the Doorstep', 'year': '1999'},
         {'title': 'WALL-E', 'year': '2008'},
-        {'title': 'The Pork of Music', 'year': '2012'},
     ]
 
     user = User(name=name)
@@ -84,3 +83,9 @@ def forge():
 
     db.session.commit()
     click.echo('Done.')
+
+
+@app.errorhandler(404)  # 传入要处理的错误代码
+def page_not_found(e):  # 接受异常对象作为参数
+    user = User.query.first()
+    return render_template('404.html', user=user), 404  # 返回模板和状态码
